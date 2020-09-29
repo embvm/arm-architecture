@@ -1,0 +1,6 @@
+[wrap-git]
+url = https://github.com/ARM-software/CMSIS_5.git
+revision = 5.7.0
+clone-recursive = true
+
+
