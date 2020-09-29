@@ -123,6 +123,10 @@ sloccount-full-report: $(CONFIGURED_BUILD_DEP)
 vale: $(CONFIGURED_BUILD_DEP)
 	$(Q) ninja -C $(BUILDRESULTS) vale
 
+.PHONY: meson-patches
+meson-patches:
+	$(Q) tar -cf subprojects/packagefiles/cmsis-5.tgz -C tools cmsis-5/
+
 .PHONY: coverage
 coverage:
 	$(Q)if [ ! -e "$(BUILDRESULTS)/coverage/build.ninja" ]; then meson $(BUILDRESULTS)/coverage $(INTERNAL_OPTIONS) $(OPTIONS) -Db_coverage=true; fi
@@ -177,6 +181,7 @@ help :
 	@echo "  clean: cleans build artifacts, keeping build files in place"
 	@echo "  distclean: removes the configured build output directory"
 	@echo "  reconfig: Reconfigure an existing build output folder with new settings"
+	@echo "  meson-patches: Re-build local build patch files for subprojects."
 	@echo "  Code Formating:"
 	@echo "    format: runs clang-format on codebase"
 	@echo "    format-patch: generates a patch file with formatting changes"
