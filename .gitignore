@@ -5,8 +5,10 @@
 *.sublime-workspace
 
 # Meson subprojects
-**/subprojects/**
-!**/subprojects/*.wrap
+subprojects/**
+!subprojects/*.wrap
+!subprojects/packagefiles/
+!subprojects/packagefiles/**
 
 ########################
 # C / C++ Ignore Rules #
