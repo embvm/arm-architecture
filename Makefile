@@ -123,10 +123,6 @@ sloccount-full-report: $(CONFIGURED_BUILD_DEP)
 vale: $(CONFIGURED_BUILD_DEP)
 	$(Q) ninja -C $(BUILDRESULTS) vale
 
-.PHONY: meson-patches
-meson-patches:
-	$(Q) tar -cf subprojects/packagefiles/cmsis-5.tgz -C tools cmsis-5/
-
 .PHONY: coverage
 coverage:
 	$(Q)if [ ! -e "$(BUILDRESULTS)/coverage/build.ninja" ]; then meson $(BUILDRESULTS)/coverage $(INTERNAL_OPTIONS) $(OPTIONS) -Db_coverage=true; fi
