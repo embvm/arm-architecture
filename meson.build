@@ -91,7 +91,6 @@ subdir('build/objcopy')
 cmsis = subproject('cmsis-5')
 cmsis_cortex_m_include = cmsis.get_variable('cmsis_cortex_m_include')
 
-# Configure the project to include `libc` headers by default
 #######################
 # Process Source Tree #
 #######################
