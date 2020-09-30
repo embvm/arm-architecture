@@ -45,7 +45,7 @@ void NVICControl::clear_(int32_t irq) noexcept
 
 uintptr_t NVICControl::handler_(int32_t irq, uintptr_t func) noexcept
 {
-	NVIC_SetVector(static_cast<IRQn_Type>(irq), static_cast<uint32_t>(func));
+	NVIC_SetVector(static_cast<IRQn_Type>(irq), func);
 
 	return func;
 }
