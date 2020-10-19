@@ -4,10 +4,10 @@
 #include "arm_common_arch.hpp"
 
 /*
-* The Cortex-M3 and M4 are the same with the significant difference that Cortex-M4 has
-* 1) DSP extensions and
-* 2) Optional FPU
-*/
+ * The Cortex-M3 and M4 are the same with the significant difference that Cortex-M4 has
+ * 1) DSP extensions and
+ * 2) Optional FPU
+ */
 
 // Currently there are no differences between ARM common arch and Cortex-M
 using ARMCortexMArch = ARMCommonArch;
