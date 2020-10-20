@@ -8,8 +8,10 @@ OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
  * It defines following symbols, which code can use without definition:
  *   __exidx_start
  *   __exidx_end
- *   __etext
- *   __data_start__
+ *   __etext - end of text section (following this is rodata!)
+ *   __end_used_flash - (also accounts for flash used to store .data contents)
+ *   __data_start_in_flash - data start address in flash
+ *   __data_start__ - data start address in RAM
  *   __preinit_array_start
  *   __preinit_array_end
  *   __init_array_start
@@ -33,39 +35,38 @@ SECTIONS
 {
     .text :
     {
-     	/*
-        * TODO: migrate to 'vectors'?
-        */
+     	/* Startup code is the first thing in flash/.text */
         KEEP(*(.isr_vector))
+
+        /* Then comes code */
         *(.text*)
 
-        KEEP(*(.init))
-        KEEP(*(.fini))
+        /* Glue ARM to Thumb code */
+        *(.glue_7)
 
-        /* .ctors */
-        *crtbegin.o(.ctors)
-        *crtbegin?.o(.ctors)
-        /* TODO: really exclude dtors? I guess b/c we don't exit? */
-        *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
-        *(SORT(.ctors.*))
-        *(.ctors)
+        /* Glue Thumb to ARM code */
+        *(.glue_7t)
 
-        /* .dtors */
-        *crtbegin.o(.dtors)
-        *crtbegin?.o(.dtors)
-        /* TODO: really exclude dtors? I guess b/c we don't exit? */
-        *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
-        *(SORT(.dtors.*))
-        *(.dtors)
-
-        *(.rodata*)
-
+        /* Exception Handling ? */
         KEEP(*(.eh_frame*))
         /* TODO: align 4?
         *(.eh_frame*)
+
+        KEEP(*(.init))
+        KEEP(*(.fini))
 		. = ALIGN(4);
+
+        /* End of text section */
+        __etext = .;
         */
     } > FLASH
+
+    /* Constant data, used for initialization */
+    .rodata :
+    {
+        . = ALIGN(4);
+        *(.rodata*)
+    } >FLASH
 
     .ARM.extab :
     {
@@ -79,44 +80,52 @@ SECTIONS
     } > FLASH
     __exidx_end = .;
 
-    __etext = .;
-
-    .data : AT (__etext)
+    .preinit_array     :
     {
-        __data_start__ = .;
-        *(vtable)
-        *(.data*)
-
         . = ALIGN(4);
-        /* preinit data */
         PROVIDE_HIDDEN (__preinit_array_start = .);
         KEEP(*(.preinit_array))
         PROVIDE_HIDDEN (__preinit_array_end = .);
+    } >FLASH
 
+    .init_array :
+    {
         . = ALIGN(4);
-        /* init data */
         /*
         * TODO: do I need to put the ctors here??
         * KEEP(*(.ctors))
         */
         PROVIDE_HIDDEN (__init_array_start = .);
-        KEEP(*(SORT(.init_array.*)))
-        KEEP(*(.init_array))
+        KEEP (*(SORT(.init_array.*)))
+        KEEP (*(.init_array*))
         PROVIDE_HIDDEN (__init_array_end = .);
+    } >FLASH
 
+    .fini_array :
+    {
         . = ALIGN(4);
-        /* finit data */
         PROVIDE_HIDDEN (__fini_array_start = .);
-        KEEP(*(SORT(.fini_array.*)))
-        KEEP(*(.fini_array))
+        KEEP (*(SORT(.fini_array.*)))
+        KEEP (*(.fini_array*))
         PROVIDE_HIDDEN (__fini_array_end = .);
+    } >FLASH
 
-        KEEP(*(.jcr*))
+    __data_start_in_flash = .;
+
+    .data : AT (__etext)
+    {
         . = ALIGN(4);
+        __data_start__ = .;
+        *(vtable)
+        *(.data)
+        *(.data*)
+        . = ALIGN(4);
+
         /* All data end */
         __data_end__ = .;
-
     } > RAM
+
+    __end_used_flash = __data_start_in_flash + SIZEOF(.data);
 
     .bss :
     {
@@ -156,7 +165,7 @@ SECTIONS
 
     /* Check if text sections + data exceeds FLASH limit */
     DataInitFlashUsed = __bss_start__ - __data_start__;
-    CodeFlashUsed = __etext - ORIGIN(FLASH);
+    CodeFlashUsed = __end_used_flash - ORIGIN(FLASH);
     TotalFlashUsed = CodeFlashUsed + DataInitFlashUsed;
     ASSERT(TotalFlashUsed <= LENGTH(FLASH), "region FLASH overflowed with .data and user data")
 
