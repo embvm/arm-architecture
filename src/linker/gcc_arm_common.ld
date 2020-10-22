@@ -112,7 +112,7 @@ SECTIONS
 
     __data_start_in_flash = .;
 
-    .data : AT (__etext)
+    .data : AT (__data_start_in_flash)
     {
         . = ALIGN(4);
         __data_start__ = .;
