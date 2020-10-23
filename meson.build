@@ -12,7 +12,7 @@ project('embvm ARM Architecture Modules',
 		'cpp_std=c++17', 'build.cpp_std=c++17',
 	],
 	meson_version: '>=0.56.0',
-	version: '0.1'
+	version: '0.9'
 )
 
 ################################
@@ -100,9 +100,22 @@ cmsis_cortex_m_include = cmsis.get_variable('cmsis_cortex_m_include')
 # Add files to this variable if you want them analyzed by clang-tidy
 clangtidy_files = []
 # Add dependencies to this array for testing with Catch2
-#catch2_tests_dep = []
+# catch2_tests_dep = []
 
 subdir('src')
+
+arm_dep = declare_dependency(
+	dependencies:
+	[
+        arm_arch_dep,
+		arm_common_drivers_dep,
+        arm_common_utilties_dep
+	],
+	link_args: [
+		# So the application linker script can pick up gcc_arm_common.ld
+		'-L' + meson.current_source_dir() / 'src/linker',
+	],
+)
 
 # Defined after src and test so catch2_dep is fully populated
 # when creating the built-in targets
