@@ -80,6 +80,7 @@ SECTIONS
     {
         . = ALIGN(4);
         *(.rodata*)
+        . = ALIGN(4);
     } >FLASH
 
     .ARM.extab :
@@ -87,31 +88,29 @@ SECTIONS
         *(.ARM.extab* .gnu.linkonce.armextab.*)
     } > FLASH
 
-    __exidx_start = .;
     .ARM.exidx :
     {
+        __exidx_start = .;
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
     } > FLASH
-    __exidx_end = .;
 
-    .preinit_array     :
+    .preinit_array :
     {
         . = ALIGN(4);
         PROVIDE_HIDDEN (__preinit_array_start = .);
         KEEP(*(.preinit_array))
+        . = ALIGN(4);
         PROVIDE_HIDDEN (__preinit_array_end = .);
     } >FLASH
 
     .init_array :
     {
         . = ALIGN(4);
-        /*
-        * TODO: do I need to put the ctors here??
-        * KEEP(*(.ctors))
-        */
         PROVIDE_HIDDEN (__init_array_start = .);
         KEEP (*(SORT(.init_array.*)))
         KEEP (*(.init_array*))
+        . = ALIGN(4);
         PROVIDE_HIDDEN (__init_array_end = .);
     } >FLASH
 
@@ -121,6 +120,7 @@ SECTIONS
         PROVIDE_HIDDEN (__fini_array_start = .);
         KEEP (*(SORT(.fini_array.*)))
         KEEP (*(.fini_array*))
+        . = ALIGN(4);
         PROVIDE_HIDDEN (__fini_array_end = .);
     } >FLASH
 
