@@ -1,3 +1,6 @@
+// Copyright 2020 Embedded Artistry LLC
+// SPDX-License-Identifier: MIT
+
 #include "arm_common_arch.hpp"
 #include <processor_includes.hpp> // Processor-specific include that contains headers/defines
 

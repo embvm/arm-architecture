@@ -1,3 +1,6 @@
+// Copyright 2020 Embedded Artistry LLC
+// SPDX-License-Identifier: MIT
+
 #ifndef ARM_NVIC_DRIVER_HPP_
 #define ARM_NVIC_DRIVER_HPP_
 
